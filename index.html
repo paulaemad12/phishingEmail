@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phishing Simulation and Training Platform</title>
+    <!-- Include styles and scripts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding-bottom: 80px; /* Adjusted for footer */
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav a {
+            color: #fff;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        .container {
+            padding: 20px;
+        }
+        .section {
+            background-color: #fff;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .phishing-simulation, .cybersecurity-game {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .phishing-simulation div, .cybersecurity-game div {
+            flex: 1 1 300px;
+            margin: 10px;
+            padding: 20px;
+            background-color: #e9e9e9;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .phishing-simulation div img, .cybersecurity-game div img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+        .quiz-option {
+            display: block;
+            text-align: left;
+            margin: 5px 0;
+        }
+        /* Styles for toast notifications */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from { bottom: 0; opacity: 0;}
+            to { bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from { opacity: 1;}
+            to { opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Phishing Simulation and Training Platform</h1>
+    </header>
+    <nav>
+        <a href="#phishing-simulation">Phishing Simulation</a>
+        <a href="#cybersecurity-game">Cybersecurity Game</a>
+    </nav>
+    <div class="container">
+        <!-- Phishing Simulation Section -->
+        <div class="section" id="phishing-simulation">
+            <h2>Phishing Email Checker</h2>
+            <div class="phishing-simulation">
+                <div>
+                    <img src="https://storage.googleapis.com/a1aa/image/iA39io8fVzWgN69ijk7aoMC0gwgAc5fyD4pQAPm7NpOJUTxTA.jpg" alt="Phishing Email Simulation" width="300" height="200">
+                    <h3>Check if an Email is Phishing</h3>
+                    <p>Enter the email content to check if it is a phishing email.</p>
+                    <form id="phishing-check-form">
+                        <label for="email-content">Enter Email Content:</label>
+                        <textarea id="email-content" name="email-content" rows="5" class="border rounded p-2 w-full"></textarea>
+                        <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">Check Email</button>
+                        <div id="phishing-error" class="error-message"></div>
+                    </form>
+                    <div id="phishing-result" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Password Checker Section -->
+        <div class="section" id="password-checker">
+            <h2>Password Strength Checker</h2>
+            <div class="password-checker">
+                <div>
+                    <img src="https://storage.googleapis.com/a1aa/image/SDhjTBEJIFr9AhXyupuOI4Q1jsai5BrAhErLwkPzIquC1U8E.jpg" alt="Password Strength Checker" width="300" height="200">
+                    <h3>Check Password Strength</h3>
+                    <p>Enter a password to check its strength.</p>
+                    <form id="password-check-form">
+                        <label for="password-input">Enter Password:</label>
+                        <input type="password" id="password-input" name="password" class="border rounded p-2 w-full">
+                        <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">Check Strength</button>
+                    </form>
+                    <div id="password-result" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Cybersecurity Game Section -->
+        <div class="section" id="cybersecurity-game">
+            <h2>Interactive Cybersecurity Awareness Game</h2>
+            <div class="cybersecurity-game">
+                <!-- Game Levels -->
+                <div>
+                    <img src="https://storage.googleapis.com/a1aa/image/SDhjTBEJIFr9AhXyupuOI4Q1jsai5BrAhErLwkPzIquC1U8E.jpg" alt="Password Security Level" width="300" height="200">
+                    <h3>Password Security</h3>
+                    <p>Learn about creating strong passwords through interactive game levels.</p>
+                    <button type="button" onclick="playLevel('Password Security')" class="bg-green-500 text-white p-2 rounded mt-2">Play Level</button>
+                </div>
+                <div>
+                    <img src="https://storage.googleapis.com/a1aa/image/XjI5GHgvB5pqPBfcHK0N4bMav0f6PJJvJIIDfdtwVfOzQNFPB.jpg" alt="Social Engineering Level" width="300" height="200">
+                    <h3>Social Engineering</h3>
+                    <p>Understand the tactics used in social engineering and how to protect against them.</p>
+                    <button type="button" onclick="playLevel('Social Engineering')" class="bg-green-500 text-white p-2 rounded mt-2">Play Level</button>
+                </div>
+                <div>
+                    <img src="https://storage.googleapis.com/a1aa/image/MRrSsbUunWJYL5ClLhlj0ZfP74Xuv41lQE29PfadVkhPUTxTA.jpg" alt="Secure Browsing Level" width="300" height="200">
+                    <h3>Secure Browsing</h3>
+                    <p>Learn best practices for secure browsing to protect your information online.</p>
+                    <button type="button" onclick="playLevel('Secure Browsing')" class="bg-green-500 text-white p-2 rounded mt-2">Play Level</button>
+                </div>
+            </div>
+            <div id="cybersecurity-game-content" class="mt-4 p-4 bg-gray-100 rounded"></div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2023 Phishing Simulation and Training Platform</p>
+    </footer>
+    <div id="toast"></div> <!-- Toast Notification Div -->
+    <!-- Include Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Include Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Include Axios for HTTP requests (already included in head) -->
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            // Your Firebase configuration
+            apiKey: "AIzaSyCGaGf4uJUSovXITxL2leFauR6vFnTuX1E",
+            authDomain: "phishingemail-d49c7.firebaseapp.com",
+            projectId: "phishingemail-d49c7",
+            storageBucket: "phishingemail-d49c7.appspot.com",
+            messagingSenderId: "1087478287980",
+            appId: "1:1087478287980:web:845f7b54fce51d030c9249",
+            measurementId: "G-F85CL25KL4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Event listener for the phishing check form
+        document.getElementById('phishing-check-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const emailContent = document.getElementById('email-content').value.trim();
+            const errorDiv = document.getElementById('phishing-error');
+            const resultDiv = document.getElementById('phishing-result');
+            errorDiv.innerText = '';
+            resultDiv.innerHTML = '';
+
+            if (emailContent === '') {
+                errorDiv.innerText = 'Please enter the email content.';
+                return;
+            }
+
+            try {
+                // Send the email content to the server for phishing detection
+                const response = await axios.post('http://localhost:3000/api/detect-phishing', { content: emailContent });
+                const { isPhishing, reasons } = response.data;
+
+                if (isPhishing) {
+                    // Display the reasons
+                    resultDiv.innerHTML = `
+                        <p><strong>This email is likely a phishing email.</strong></p>
+                        <p><strong>Reason(s):</strong></p>
+                        <ul>${reasons.map(reason => `<li>${reason}</li>`).join('')}</ul>
+                        <button id="report-phishing" class="bg-red-500 text-white p-2 rounded mt-2">Report Phishing</button>
+                        <button id="mark-safe" class="bg-green-500 text-white p-2 rounded mt-2">Mark as Safe</button>
+                    `;
+
+                    // Add event listeners to the buttons
+                    document.getElementById('report-phishing').addEventListener('click', () => {
+                        handleReportPhishing(emailContent, reasons);
+                    });
+                    document.getElementById('mark-safe').addEventListener('click', () => {
+                        handleMarkSafe();
+                    });
+                } else {
+                    resultDiv.innerHTML = `
+                        <p><strong>This email appears to be safe.</strong></p>
+                        <button id="disagree" class="bg-yellow-500 text-white p-2 rounded mt-2">I think it's Phishing</button>
+                    `;
+                    document.getElementById('disagree').addEventListener('click', () => {
+                        handleDisagree(emailContent);
+                    });
+                }
+            } catch (error) {
+                console.error('Error detecting phishing:', error);
+                errorDiv.innerText = 'An error occurred while checking the email. Please try again later.';
+            }
+        });
+
+        // Function to handle reporting phishing emails
+        function handleReportPhishing(emailContent, reasons) {
+            // Save the phishing email to Firestore for further analysis
+            db.collection('reportedPhishingEmails').add({
+                content: emailContent,
+                reasons: reasons,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                showToast('Phishing email reported. Thank you!');
+                document.getElementById('phishing-result').innerHTML = '';
+            }).catch((error) => {
+                console.error("Error reporting phishing email: ", error);
+                showToast('Error reporting phishing email.');
+            });
+        }
+
+        // Function to handle marking an email as safe
+        function handleMarkSafe() {
+            document.getElementById('phishing-result').innerText = 'Email marked as safe.';
+            showToast('Email marked as safe.');
+        }
+
+        // Function to handle user disagreement
+        function handleDisagree(emailContent) {
+            // Allow user to report the email as phishing
+            handleReportPhishing(emailContent, ['User reported as phishing']);
+        }
+
+        // Function to show toast notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = 'show';
+            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+        }
+
+        // Password Strength Checker
+        document.getElementById('password-check-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('password-input').value;
+            const { strength, suggestions } = calculatePasswordStrength(password);
+            let resultText = `Password Strength: ${strength}`;
+            if (suggestions.length > 0) {
+                resultText += `\nSuggestions:\n- ${suggestions.join('\n- ')}`;
+            }
+            document.getElementById('password-result').innerText = resultText;
+        });
+
+        // Function to calculate password strength
+        function calculatePasswordStrength(password) {
+            let strength = 'Weak';
+            let suggestions = [];
+
+            // Check length
+            if (password.length < 8) {
+                suggestions.push('Use at least 8 characters');
+            }
+
+            // Check character types
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /[0-9]/.test(password);
+            const hasSpecialChars = /[^A-Za-z0-9]/.test(password);
+
+            if (!hasUpperCase) suggestions.push('Include uppercase letters');
+            if (!hasLowerCase) suggestions.push('Include lowercase letters');
+            if (!hasNumbers) suggestions.push('Include numbers');
+            if (!hasSpecialChars) suggestions.push('Include special characters');
+
+            // Check common passwords
+            const commonPasswords = ['password', '123456', 'qwerty', 'abc123', 'letmein'];
+            if (commonPasswords.includes(password.toLowerCase())) {
+                suggestions.push('Avoid common passwords');
+            }
+
+            // Calculate entropy
+            let charsetSize = 0;
+            if (hasUpperCase) charsetSize += 26;
+            if (hasLowerCase) charsetSize += 26;
+            if (hasNumbers) charsetSize += 10;
+            if (hasSpecialChars) charsetSize += 32; // Approximate number of special characters
+
+            const entropy = Math.log2(Math.pow(charsetSize, password.length));
+
+            if (entropy >= 100) {
+                strength = 'Very Strong';
+            } else if (entropy >= 60) {
+                strength = 'Strong';
+            } else if (entropy >= 40) {
+                strength = 'Moderate';
+            }
+
+            return { strength, suggestions };
+        }
+
+        // Function to play game levels
+        function playLevel(level) {
+            let content = '';
+            switch(level) {
+                case 'Password Security':
+                    content = renderQuiz('Password Security', passwordSecurityQuiz);
+                    break;
+                case 'Social Engineering':
+                    content = renderQuiz('Social Engineering', socialEngineeringQuiz);
+                    break;
+                case 'Secure Browsing':
+                    content = renderQuiz('Secure Browsing', secureBrowsingQuiz);
+                    break;
+            }
+            document.getElementById('cybersecurity-game-content').innerHTML = content;
+            startQuiz(level);
+        }
+
+        // Quiz data
+        const passwordSecurityQuiz = [
+            {
+                question: 'Which of the following is the strongest password?',
+                options: ['Password123', 'P@ssw0rd!', '12345678', 'abcdefgh'],
+                answer: 'P@ssw0rd!'
+            },
+            {
+                question: 'True or False: You should use the same password for multiple accounts.',
+                options: ['True', 'False'],
+                answer: 'False'
+            },
+            {
+                question: 'What is a good practice when creating passwords?',
+                options: [
+                    'Use personal information like your birthday',
+                    'Use a mix of letters, numbers, and symbols',
+                    'Keep it short for easy remembrance',
+                    'Use common words'
+                ],
+                answer: 'Use a mix of letters, numbers, and symbols'
+            },
+            {
+                question: 'Why is it important to use unique passwords for different accounts?',
+                options: [
+                    'It’s not important',
+                    'To prevent multiple accounts being compromised',
+                    'To make passwords harder to remember',
+                    'Because websites require it'
+                ],
+                answer: 'To prevent multiple accounts being compromised'
+            },
+            {
+                question: 'What is a password manager?',
+                options: [
+                    'A tool to generate and store passwords securely',
+                    'A person who manages passwords',
+                    'An antivirus software',
+                    'A type of malware'
+                ],
+                answer: 'A tool to generate and store passwords securely'
+            },
+            {
+                question: 'What is two-factor authentication?',
+                options: [
+                    'Using two passwords',
+                    'A security process requiring two forms of identification',
+                    'Logging in from two devices',
+                    'A type of encryption'
+                ],
+                answer: 'A security process requiring two forms of identification'
+            },
+            {
+                question: 'Which of these is an example of a strong password?',
+                options: ['john1990', '12345678', 'P@$$w0rd2021!', 'qwerty'],
+                answer: 'P@$$w0rd2021!'
+            },
+            {
+                question: 'How often should you change your passwords?',
+                options: ['Every week', 'Never', 'Periodically or if compromised', 'Only when you forget them'],
+                answer: 'Periodically or if compromised'
+            },
+            {
+                question: 'What should you do if you suspect your password has been compromised?',
+                options: [
+                    'Ignore it',
+                    'Change it immediately',
+                    'Share it with friends',
+                    'Use it on more websites'
+                ],
+                answer: 'Change it immediately'
+            },
+            {
+                question: 'Which of the following is NOT recommended for password security?',
+                options: [
+                    'Sharing your passwords with others',
+                    'Using a password manager',
+                    'Enabling two-factor authentication',
+                    'Using complex passwords'
+                ],
+                answer: 'Sharing your passwords with others'
+            }
+        ];
+
+        const socialEngineeringQuiz = [
+            {
+                question: 'What is social engineering in cybersecurity?',
+                options: [
+                    'A software development methodology',
+                    'A tactic that manipulates people into giving up confidential information',
+                    'A type of firewall',
+                    'A way to enhance user interface design'
+                ],
+                answer: 'A tactic that manipulates people into giving up confidential information'
+            },
+            {
+                question: 'Which of the following is a common type of social engineering attack?',
+                options: ['Phishing', 'DDoS attack', 'SQL injection', 'Brute-force attack'],
+                answer: 'Phishing'
+            },
+            {
+                question: 'What is pretexting in the context of social engineering?',
+                options: [
+                    'Sending mass emails to users',
+                    'Creating a fabricated scenario to steal information',
+                    'Scanning networks for vulnerabilities',
+                    'Encrypting data without permission'
+                ],
+                answer: 'Creating a fabricated scenario to steal information'
+            },
+            {
+                question: 'How can you protect yourself from social engineering attacks?',
+                options: [
+                    'By sharing passwords with colleagues',
+                    'By ignoring security updates',
+                    'By being cautious of unsolicited requests for information',
+                    'By using the same password everywhere'
+                ],
+                answer: 'By being cautious of unsolicited requests for information'
+            },
+            {
+                question: 'What is baiting in social engineering?',
+                options: [
+                    'Offering something enticing to lure victims',
+                    'Threatening to harm unless information is given',
+                    'Monitoring network traffic',
+                    'Installing antivirus software'
+                ],
+                answer: 'Offering something enticing to lure victims'
+            },
+            {
+                question: 'Tailgating is a physical security breach where an unauthorized person:',
+                options: [
+                    'Follows an authorized person into a restricted area',
+                    'Sends phishing emails',
+                    'Intercepts network traffic',
+                    'Uses malware to access data'
+                ],
+                answer: 'Follows an authorized person into a restricted area'
+            },
+            {
+                question: 'Which behavior might indicate a social engineering attempt?',
+                options: [
+                    'A request for sensitive information via email',
+                    'An official update from known software',
+                    'A scheduled maintenance notification',
+                    'A receipt from a recent purchase'
+                ],
+                answer: 'A request for sensitive information via email'
+            },
+            {
+                question: 'What should you do if you suspect a social engineering attack?',
+                options: [
+                    'Provide the information to avoid conflict',
+                    'Ignore it and proceed as normal',
+                    'Report it to the appropriate security personnel',
+                    'Forward it to friends'
+                ],
+                answer: 'Report it to the appropriate security personnel'
+            },
+            {
+                question: 'Dumpster diving is a technique where attackers:',
+                options: [
+                    'Search through trash to find confidential information',
+                    'Hack into databases',
+                    'Send malicious attachments',
+                    'Install spyware on devices'
+                ],
+                answer: 'Search through trash to find confidential information'
+            },
+            {
+                question: 'Which of the following is NOT a social engineering technique?',
+                options: ['Phishing', 'Smishing', 'Vishing', 'Firewalking'],
+                answer: 'Firewalking'
+            }
+        ];
+
+        const secureBrowsingQuiz = [
+            {
+                question: 'What does "HTTPS" stand for?',
+                options: [
+                    'HyperText Transfer Protocol Secure',
+                    'HyperText Transfer Protocol Standard',
+                    'High Transfer Protocol Secure',
+                    'HyperText Transfer Procedure Secure'
+                ],
+                answer: 'HyperText Transfer Protocol Secure'
+            },
+            {
+                question: 'Which of the following is a safe practice while browsing the internet?',
+                options: [
+                    'Clicking on pop-up ads',
+                    'Using strong and unique passwords',
+                    'Downloading files from unknown sources',
+                    'Sharing personal information on unsecured websites'
+                ],
+                answer: 'Using strong and unique passwords'
+            },
+            {
+                question: 'Why should you keep your browser updated?',
+                options: [
+                    'For new features only',
+                    'To change the interface',
+                    'To fix security vulnerabilities',
+                    'To increase download speed'
+                ],
+                answer: 'To fix security vulnerabilities'
+            },
+            {
+                question: 'What is a VPN used for?',
+                options: [
+                    'Enhancing graphics performance',
+                    'Securing your internet connection by encrypting data',
+                    'Increasing internet speed',
+                    'Accessing local network resources remotely without security'
+                ],
+                answer: 'Securing your internet connection by encrypting data'
+            },
+            {
+                question: 'Which symbol indicates a secure connection in a web browser?',
+                options: [
+                    'An open lock icon',
+                    'A broken chain icon',
+                    'A padlock icon',
+                    'A warning triangle'
+                ],
+                answer: 'A padlock icon'
+            },
+            {
+                question: 'What should you do if you receive a warning about an invalid certificate when visiting a website?',
+                options: [
+                    'Proceed without concern',
+                    'Ignore the warning and continue',
+                    'Close the website immediately',
+                    'Enter personal information quickly'
+                ],
+                answer: 'Close the website immediately'
+            },
+            {
+                question: 'What is the risk of using public Wi-Fi without protection?',
+                options: [
+                    'Slow internet speed',
+                    'Higher data costs',
+                    'Increased vulnerability to attackers',
+                    'Nothing; it is completely safe'
+                ],
+                answer: 'Increased vulnerability to attackers'
+            },
+            {
+                question: 'Which of these is a method to ensure secure browsing?',
+                options: [
+                    'Disabling browser updates',
+                    'Clearing cache regularly',
+                    'Using incognito mode for all browsing',
+                    'Avoiding security software'
+                ],
+                answer: 'Clearing cache regularly'
+            },
+            {
+                question: 'What is phishing?',
+                options: [
+                    'A way to catch fish',
+                    'A cyberattack that tricks users into revealing personal information',
+                    'A method to improve browser speed',
+                    'A type of firewall'
+                ],
+                answer: 'A cyberattack that tricks users into revealing personal information'
+            },
+            {
+                question: 'Why should you avoid clicking on suspicious links?',
+                options: [
+                    'They can slow down your internet',
+                    'They might lead to unwanted ads',
+                    'They can lead to malware infections or phishing sites',
+                    'They consume more data'
+                ],
+                answer: 'They can lead to malware infections or phishing sites'
+            }
+        ];
+
+        // Function to render the quiz
+        function renderQuiz(title, quizData) {
+            return `
+                <h2>${title}</h2>
+                <div id="quiz-container"></div>
+            `;
+        }
+
+        // Function to start the quiz
+        function startQuiz(level) {
+            let quizData;
+            switch(level) {
+                case 'Password Security':
+                    quizData = passwordSecurityQuiz;
+                    break;
+                case 'Social Engineering':
+                    quizData = socialEngineeringQuiz;
+                    break;
+                case 'Secure Browsing':
+                    quizData = secureBrowsingQuiz;
+                    break;
+            }
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            function showQuestion() {
+                if (currentQuestionIndex < quizData.length) {
+                    const questionObj = quizData[currentQuestionIndex];
+                    let optionsHtml = '';
+                    questionObj.options.forEach((option, index) => {
+                        optionsHtml += `
+                            <div>
+                                <input type="radio" id="option${index}" name="quiz-option" value="${option}" class="quiz-option">
+                                <label for="option${index}">${option}</label>
+                            </div>
+                        `;
+                    });
+
+                    document.getElementById('quiz-container').innerHTML = `
+                        <p>Question ${currentQuestionIndex + 1} of ${quizData.length}</p>
+                        <p>${questionObj.question}</p>
+                        <form id="quiz-form">
+                            ${optionsHtml}
+                            <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">Submit</button>
+                        </form>
+                        <div id="quiz-result" class="mt-4"></div>
+                    `;
+
+                    document.getElementById('quiz-form').addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        const selectedOption = document.querySelector('input[name="quiz-option"]:checked');
+                        if (selectedOption) {
+                            const answer = selectedOption.value;
+                            if (answer === questionObj.answer) {
+                                score++;
+                                document.getElementById('quiz-result').innerHTML = '<span class="success-message">Correct!</span>';
+                            } else {
+                                document.getElementById('quiz-result').innerHTML = `<span class="error-message">Incorrect. The correct answer is "${questionObj.answer}".</span>`;
+                            }
+                            currentQuestionIndex++;
+                            setTimeout(showQuestion, 2000);
+                        } else {
+                            document.getElementById('quiz-result').innerHTML = '<span class="error-message">Please select an option.</span>';
+                        }
+                    });
+                } else {
+                    // Provide summary and knowledge gained
+                    let knowledgeSummary = '';
+                    if (score === quizData.length) {
+                        knowledgeSummary = 'Excellent! You have a strong understanding of this topic.';
+                    } else if (score >= quizData.length * 0.7) {
+                        knowledgeSummary = 'Good job! You have a good grasp but there is room for improvement.';
+                    } else {
+                        knowledgeSummary = 'You might want to review the material to improve your understanding.';
+                    }
+
+                    document.getElementById('quiz-container').innerHTML = `
+                        <p>You scored ${score} out of ${quizData.length}.</p>
+                        <p>${knowledgeSummary}</p>
+                        <button onclick="playLevel('${level}')" class="bg-green-500 text-white p-2 rounded mt-2">Retake Quiz</button>
+                    `;
+                }
+            }
+
+            showQuestion();
+        }
+    </script>
+</body>
+</html>
